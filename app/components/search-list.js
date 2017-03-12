@@ -1,6 +1,6 @@
 import Ember from 'ember';
 
-const { String: { w } } = Ember;
+const { inject } = Ember;
 
 export default Ember.Component.extend({
   init() {
@@ -8,9 +8,18 @@ export default Ember.Component.extend({
     this.results = [];
   },
 
+  store: inject.service(),
+
   actions: {
     querySongs() {
-      this.set('results', w('Test Gla Bla'));
+      SC.get('/tracks', {
+        q: this.get('query'),
+        limit: 30
+      }).then((tracks) => {
+        this.set('results', tracks.map((track) => {
+          return this.get('store').createRecord('track', { title: track.title});
+        }))
+      });
     }
   }
 });
